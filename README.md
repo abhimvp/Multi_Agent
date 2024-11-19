@@ -141,3 +141,10 @@ return response.json()["outputs"][0]["outputs"][0]["results"]["text"]["data"]["t
 $ python macro_flow_ai.py
 {"protein": 176, "calories": 2200, "fat": 73, "carbs": 247}
 ```
+
+## Build Frontend using streamlit
+
+- streamlit is python UI library - pip install streamlit astrapy("allows us to interface with AstraDB to save data in the database and to automatically vectorize them")
+- In the UI , we ask the user profile information & use the functions we just wrote to interact with those different flows that we built in LangFlow.
+- main_ui.py for building the UI and db.py to handle operations for my database & form submit file form_submit.py file & also a profiles.py file
+  ![alt text](Images/image_4.png)
