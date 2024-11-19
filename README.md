@@ -148,3 +148,8 @@ $ python macro_flow_ai.py
 - In the UI , we ask the user profile information & use the functions we just wrote to interact with those different flows that we built in LangFlow.
 - main_ui.py for building the UI and db.py to handle operations for my database & form submit file form_submit.py file & also a profiles.py file
   ![alt text](Images/image_4.png)
+
+- Now save the data in Astra DB
+- added env variables to connect to the astradb database and create collections that we deal with 
+![alt text](Images/image_5.png)
+- upto now we can see default profile values being showed up if there is not any profile in session_state
