@@ -150,6 +150,11 @@ $ python macro_flow_ai.py
   ![alt text](Images/image_4.png)
 
 - Now save the data in Astra DB
-- added env variables to connect to the astradb database and create collections that we deal with 
-![alt text](Images/image_5.png)
+- added env variables to connect to the astradb database and create collections that we deal with
+  ![alt text](Images/image_5.png)
 - upto now we can see default profile values being showed up if there is not any profile in session_state
+- Now we enter new values and submit them.
+  ![alt text](Images/image_6.png)
+- even after refreshing the page we should see same info popping up again because now it's stored persistently in AstraDB
+- we can see the personal data persisted in the collection
+  ![alt text](Images/image_7.png)
