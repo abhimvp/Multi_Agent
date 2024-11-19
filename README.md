@@ -110,3 +110,34 @@ Notes/facts are: {notes}
 #### running locally
 
 - pip install langflow python-dotenv
+
+### calling the flow from API
+
+- we will call the Macro FLow using python API
+- In Langflow -> Go to Macro Flow -> To API -> Python API -> Make some tweaks before copying the API code into our VS Code -> In Tweals -> Add goals and profile to the value field of those components & we can see following changes to our API code so that we can pass our own goals and profile inputs from our code
+
+```
+TWEAKS = {
+  "TextInput-XXXX": {
+    "input_value": "goals"
+  },
+  "TextInput-XXXX": {
+    "input_value": "profile"
+  },
+}
+```
+
+- Now get our python API code into macro_flow_ai.py & make some modifications -> remove def main(): -> after code changes and run the file
+
+```
+$ python macro_flow_ai.py
+{'session_id': 'a9a0c5bd-0c87-423b-9858-34afd0c8a17b', 'outputs': [{'inputs': {'input_value': ''}, 'outputs': [{'results': {'text': {'text_key': 'text', 'data': {'text': '{"protein": 176, "calories": 2200, "fat": 73, "carbs": 247}\n', 'files': [], 'timestamp': '2024-11-19 15:33:23 UTC', 'flow_id': 'a9a0c5bd-0c87-423b-9858-34afd0c8a17b'}, 'default_value': '', 'text': '{"protein": 176, "calories": 2200, "fat": 73, "carbs": 247}\n', 'sender': None, 'sender_name': None, 'files': [], 'session_id': '', 'timestamp': '2024-11-19T15:33:23Z', 'flow_id': 'a9a0c5bd-0c87-423b-9858-34afd0c8a17b', 'error': False, 'edit': False, 'properties': {'text_color': None, 'background_color': None, 'edited': False, 'source': {'id': None, 'display_name': None, 'source': None}, 'icon': None, 'allow_markdown': False, 'state': 'complete', 'targets': []}, 'category': 'message', 'content_blocks': []}}, 'artifacts': {'text': {'repr': '{"protein": 176, "calories": 2200, "fat": 73, "carbs": 247}\n', 'raw': '{"protein": 176, "calories": 2200, "fat": 73, "carbs": 247}\n', 'type': 'text'}}, 'outputs': {'text': {'message': '{"protein": 176, "calories": 2200, "fat": 73, "carbs": 247}\n', 'type': 'text'}}, 'logs': {'text': []}, 'messages': [{'message': '{"protein": 176, "calories": 2200, "fat": 73, "carbs": 247}\n\n', 'sender': 'Machine', 'sender_name': 'AI', 'session_id': '', 'component_id': 'TextOutput-tAUlo', 'files': [], 'type': 'text'}], 'component_display_name': 'Result', 'component_id': 'TextOutput-tAUlo', 'used_frozen_result': False}]}]}
+```
+
+---
+
+```
+return response.json()["outputs"][0]["outputs"][0]["results"]["text"]["data"]["text"]
+$ python macro_flow_ai.py
+{"protein": 176, "calories": 2200, "fat": 73, "carbs": 247}
+```
