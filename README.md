@@ -158,3 +158,8 @@ $ python macro_flow_ai.py
 - even after refreshing the page we should see same info popping up again because now it's stored persistently in AstraDB
 - we can see the personal data persisted in the collection
   ![alt text](Images/image_7.png)
+
+- Now let's add goals form and notes
+![alt text](Images/image_8.png)
+![alt text](Images/image_9.png)
+- Above we can see the AI is generating results according to the values we have passed

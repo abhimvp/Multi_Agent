@@ -3,32 +3,60 @@ from dotenv import load_dotenv
 import os
 from typing import Optional
 import requests
+import json
 
 # Load environment variables from .env file
 load_dotenv()
 BASE_API_URL = "https://api.langflow.astra.datastax.com"
 LANGFLOW_ID = "6945a660-e525-49db-ab71-5c48bb87ff6b"
-APPLICATION_TOKEN = os.getenv("APPLICATION_TOKEN") # get it from the flows API pop windown -> generate token
+APPLICATION_TOKEN = os.getenv(
+    "APPLICATION_TOKEN"
+)  # get it from the flows API pop windown -> generate token
 # print(APPLICATION_TOKEN)
+
+
+def dict_to_string(obj, level=0):
+    strings = []
+    indent = "  " * level  # Indentation for nested levels
+
+    if isinstance(obj, dict):
+        for key, value in obj.items():
+            if isinstance(value, (dict, list)):
+                nested_string = dict_to_string(value, level + 1)
+                strings.append(f"{indent}{key}: {nested_string}")
+            else:
+                strings.append(f"{indent}{key}: {value}")
+    elif isinstance(obj, list):
+        for idx, item in enumerate(obj):
+            nested_string = dict_to_string(item, level + 1)
+            strings.append(f"{indent}Item {idx + 1}: {nested_string}")
+    else:
+        strings.append(f"{indent}{obj}")
+
+    return ", ".join(strings)
+
 
 # You can tweak the flow by adding a tweaks dictionary
 # e.g {"OpenAI-XXXXX": {"model_name": "gpt-4"}}
-def get_macros(profile,goals):
+def get_macros(profile, goals):
     TWEAKS = {
-    "TextInput-phuqp": {
-        "input_value": goals
-    },
-    "TextInput-P2MWN": {
-        "input_value": profile
+        "TextInput-phuqp": {
+            "input_value": ", ".join(
+                goals
+            )  # goals converted to a string rather than a python list
+        },
+        "TextInput-P2MWN": {"input_value": dict_to_string(profile)},
     }
-    }
-    return run_flow("",tweaks=TWEAKS,application_token=APPLICATION_TOKEN)
+    return run_flow("", tweaks=TWEAKS, application_token=APPLICATION_TOKEN)
 
-def run_flow(message: str,
-  output_type: str = "chat",
-  input_type: str = "chat",
-  tweaks: Optional[dict] = None,
-  application_token: Optional[str] = None) -> dict:
+
+def run_flow(
+    message: str,
+    output_type: str = "chat",
+    input_type: str = "chat",
+    tweaks: Optional[dict] = None,
+    application_token: Optional[str] = None,
+) -> dict:
     """
     Run a flow with a given message and optional tweaks.
 
@@ -48,9 +76,17 @@ def run_flow(message: str,
     if tweaks:
         payload["tweaks"] = tweaks
     if application_token:
-        headers = {"Authorization": "Bearer " + application_token, "Content-Type": "application/json"}
+        headers = {
+            "Authorization": "Bearer " + application_token,
+            "Content-Type": "application/json",
+        }
     response = requests.post(api_url, json=payload, headers=headers)
-    return response.json()["outputs"][0]["outputs"][0]["results"]["text"]["data"]["text"]
+    return json.loads(
+        response.json()["outputs"][0]["outputs"][0]["results"]["text"]["data"]["text"]
+    ) # convert the string to python dictionary
 
-result = get_macros("name: Abhishek , age:26,weight:129kg,183cm", "I want to lose weight")
+
+result = get_macros(
+    "name: Abhishek , age:26,weight:129kg,183cm", "I want to lose weight"
+)
 print(result)

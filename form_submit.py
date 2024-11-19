@@ -22,6 +22,8 @@ def update_personal_info(existing,update_type,**kwargs):
         {"_id": existing["_id"]}, # entry we want to update
         {"$set": update_field}
     )
+    
+    return existing
         
 def add_note(note,profile_id):
     new_note = {

@@ -2,6 +2,7 @@
 # collecting the macro information like the number of calories , protein etc & then adding the notes and asking AI
 
 import streamlit as st
+from macro_flow_ai import get_macros
 from profiles import get_notes, create_profile, get_profile
 from form_submit import update_personal_info, add_note, delete_note
 
@@ -62,7 +63,7 @@ def personal_data_form():
                 with st.spinner("Submitting personal data..."):
                     # save the data
                     # all we here doing is passing all the kwargs of all the updates we want to perform within this general_type of subfield of profile
-                    update_personal_info(
+                    st.session_state.profile = update_personal_info(
                         profile,
                         "general",
                         name=name,
@@ -75,6 +76,85 @@ def personal_data_form():
                     st.success("Personal data submitted successfully")
             else:
                 st.warning("Please fill all the fields")
+
+
+@st.fragment()
+def goals_form():
+    profile = st.session_state.profile
+    with st.form("goals_form"):
+        st.header("Goals")
+        goals = st.multiselect(
+            "Select your Goals",
+            ["Muscle Gain", "Fat Loss", "Stay Active"],
+            default=profile.get("goals", ["Muscle Gain"]),
+        )
+        goals_submit = st.form_submit_button("Save")
+        if goals_submit:
+            if goals:
+                with st.spinner("Submitting goals..."):
+                    st.session_state.profile = update_personal_info(
+                        profile, "goals", goals=goals
+                    )
+                    st.success("Goals Updated")
+            else:
+                st.warning("Please select atleast one goal")
+
+
+@st.fragment()
+def macros():
+    profile = st.session_state.profile
+    nutrition = st.container(border=True)
+    nutrition.header("Macros")
+    if nutrition.button("Generate with AI"):
+        result = get_macros(profile.get("general"), profile.get("goals"))
+        profile["nutrition"] = result
+        nutrition.success("AI has generated  the results")
+
+    with nutrition.form("nutrition_form", border=False):
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            calories = st.number_input(
+                "Calories",
+                min_value=0,
+                max_value=10000,
+                step=1,
+                value=profile["nutrition"].get("calories", 0),
+            )
+        with col2:
+            protein = st.number_input(
+                "Protein",
+                min_value=0,
+                max_value=10000,
+                step=1,
+                value=profile["nutrition"].get("protein", 0),
+            )
+        with col3:
+            fat = st.number_input(
+                "Fat",
+                min_value=0,
+                max_value=10000,
+                step=1,
+                value=profile["nutrition"].get("fat", 0),
+            )
+        with col4:
+            carbs = st.number_input(
+                "Carbs",
+                min_value=0,
+                max_value=10000,
+                step=1,
+                value=profile["nutrition"].get("carbs", 0),
+            )
+        if st.form_submit_button("Save"):
+            with st.spinner("Saving..."):
+                st.session_state.profile = update_personal_info(
+                    profile,
+                    "nutrition",
+                    calories=calories,
+                    protein=protein,
+                    fat=fat,
+                    carbs=carbs,
+                )
+                st.success("Informatin Saved")
 
 
 # function to call the personal data form
@@ -96,6 +176,8 @@ def forms():
     if "notes" not in st.session_state:
         st.session_state.notes = get_notes(st.session_state.profile_id)
     personal_data_form()
+    goals_form()
+    macros()
 
 
 if __name__ == "__main__":
