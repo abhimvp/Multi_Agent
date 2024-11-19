@@ -2,7 +2,7 @@
 # collecting the macro information like the number of calories , protein etc & then adding the notes and asking AI
 
 import streamlit as st
-from macro_flow_ai import get_macros
+from macro_flow_ai import get_macros,ask_ai
 from profiles import get_notes, create_profile, get_profile
 from form_submit import update_personal_info, add_note, delete_note
 
@@ -157,6 +157,37 @@ def macros():
                 st.success("Informatin Saved")
 
 
+@st.fragment()
+def notes():
+    st.subheader("Notes: ")
+    for i, note in enumerate(st.session_state.notes):
+        cols = st.columns([5, 1])
+        with cols[0]:
+            st.text(note.get("text"))
+        with cols[1]:
+            if st.button("Delete", key=i):
+                delete_note(note.get("_id"))
+                st.session_state.notes.pop(i)
+                st.rerun()
+
+    new_note = st.text_input("Add a new note: ")
+    if st.button("Add Note"):
+        if new_note:
+            note = add_note(new_note, st.session_state.profile_id)
+            st.session_state.notes.append(note)
+            st.rerun()
+
+# Ask AI Feature
+@st.fragment()
+def ask_ai_func():
+    st.subheader('Ask AI')
+    user_question = st.text_input("Ask AI a question: ")
+    if st.button("Ask AI"):
+        with st.spinner("Asking AI , hold on mate : "):
+            result = ask_ai(st.session_state.profile, user_question)
+            st.write(result)
+
+
 # function to call the personal data form
 def forms():
     if "profile" not in st.session_state:
@@ -178,6 +209,8 @@ def forms():
     personal_data_form()
     goals_form()
     macros()
+    notes()
+    ask_ai_func()
 
 
 if __name__ == "__main__":
